@@ -1,92 +1,95 @@
 "use client";
 
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import Image from "next/image";
-import Link from "next/link";
-import { toast } from "sonner";
 import Formfield from "./Formfield";
-import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import { signupAction, signInAction } from "@/app/actions/auth";  // Import server actions for server-side logic
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/firebase/client";
-import { signIn, signup } from "@/lib/actions/auth.action";
+// import { auth } from "@/firebase/client";
 
 const AuthFormSchema = (type: FormType) => {
     return z.object({
         name: type === "sign-up" ? z.string().min(3) : z.string().optional(),
         email: z.string().email(),
         password: z.string().min(8),
-    })
-}
+    });
+};
 
 type Props = {
-    type: 'sign-in' | 'sign-up'
-  };
+    type: 'sign-in' | 'sign-up';
+};
 
-const Authform = ({ type }: { type: FormType }) => {
-  const router = useRouter();
-  const formSchema = AuthFormSchema(type);
+const AuthForm = ({ type }: { type: FormType }) => {
+    const router = useRouter();
+    const formSchema = AuthFormSchema(type);
 
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
-  });
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            name: "",
+            email: "",
+            password: "",
+        },
+    });
 
-  // 2. Define a submit handler.
-async function onSubmit(values: z.infer<typeof formSchema>) {
-  try {
-      if (type === "sign-up") {
-          const { name, email, password } = values;
-          const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
-          
-          const res = await signup({
-              uid: userCredentials.user.uid,
-              name: name!,
-              email,
-              password,
-          });
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            if (type === "sign-up") {
+                const { name, email, password } = values;
+                const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+                const res = await signupAction({
+                    uid: userCredentials.user.uid,
+                    name: name!,
+                    email,
+                    password
+                });
 
-          if (!res.success) {
-              toast.error(res.message);
-              return;
-          }
+                if (!res.success) {
+                    toast.error(res.message);
+                    return;
+                }
 
-          toast.success(res.message); // Message from the server, indicating success
-          router.push("/sign-in"); // Redirect to sign-in page after successful sign-up
-      } else {
-          const { email, password } = values;
-          const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+                toast.success(res.message);
+                router.push("/sign-in");
+            } else {
+                const { email, password } = values;
+                const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+                const idToken = await userCredentials.user.getIdToken();
 
-          const idToken = await userCredentials.user.getIdToken();
-          if (!idToken) {
-              toast.error("Failed to get ID token. Please try again.");
-              return;
-          }
-          await signIn({
-              email,
-              idToken,
-          });
-          toast.success("Sign-in successful!");
-          router.push("/"); // Redirect to homepage after successful sign-in
-      }
-  } catch (error) {
-      console.log(error);
-      toast.error(`There was an error: ${error}`);
-  }
-}
+                if (!idToken) {
+                    toast.error("Failed to get ID token. Please try again.");
+                    return;
+                }
 
-  const isSignIn = type === "sign-in";
+                const res = await signInAction({
+                    email,
+                    idToken,
+                });
 
-  return (
-    <div className="card-border lg:min-w-[566px]">
+                if (res.success) {
+                    toast.success(res.message);
+                    router.push("/");
+                } else {
+                    toast.error(res.message);
+                }
+            }
+        } catch (error) {
+            toast.error(`There was an error: ${error}`);
+        }
+    };
+
+    const isSignIn = type === "sign-in";
+
+    return (
+      <div className="card-border lg:min-w-[566px]">
       <div className="flex flex-col gap-6 card py-14 px-10">
         <div className="flex flex-row gap-2 justify-center">
           <Image src={"/logo.svg"} alt="logo" height={32} width={38} />
@@ -139,4 +142,4 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
   );
 };
 
-export default Authform;
+export default AuthForm;
