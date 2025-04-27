@@ -75,8 +75,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 });
 
                 if (res.success) {
-                    toast.success(res.message);
                     router.push("/");
+                    toast.success(res.message);
                 } else {
                     toast.error(res.message);
                 }
