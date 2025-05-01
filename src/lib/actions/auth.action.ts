@@ -98,7 +98,7 @@ export async function getLatestInterviews(params: GetLatestInterviewsParams): Pr
             .collection('interviews')
             .orderBy('createdAt', 'desc')
             .where('finalized', '==', true)
-            .where('userId', '!=', userId)
+            .where('userid', '!=', userId)
             .limit(limit)
             .get();
 

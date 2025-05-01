@@ -12,6 +12,8 @@ export default async function Home() {
     await  getInterviewByUserId(user?.id as string),
     await getLatestInterviews({ userId: user?.id as string })
   ]);
+  console.log(latestInterviews);
+  
   // const latestInterviews = await getLatestInterviews({ userId: user?.id as string });
   // const userInterviews = await getInterviewByUserId(user?.id as string);
   const hasPastInterviews = userInterviews && userInterviews.length > 0; 
