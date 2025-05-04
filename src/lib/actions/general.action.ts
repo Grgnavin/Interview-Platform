@@ -1,8 +1,8 @@
+"use server";
 import { db } from "@/firebase/admin";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { feedbackSchema } from "../../../public/constants";
-
 
 export async function getInterviewById(id:string): Promise<Interview | null> {
     const interview = await db.collection('interviews').doc(id).get();
@@ -47,6 +47,7 @@ export async function createFeedback(params: CreateFeedbackParams)  {
             finalAssessment,
             createdAt: new Date().toISOString()
         });
+
         return {
             success: true,
             feedbackId: feedback.id,
@@ -66,7 +67,7 @@ export async function getFeedbackByInterviewId(params: GetFeedbackByInterviewIdP
     const feedback = await db
             .collection('feedback')
             .where('interviewId', '==', interviewId)
-            .where('userid', '!=', userId)
+            .where('userId', '==', userId)
             .limit(1)
             .get();
 

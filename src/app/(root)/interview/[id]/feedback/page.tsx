@@ -17,7 +17,7 @@ const page = async({ params } : RouteParams) => {
         interviewId: id,
         userId: user?.id || ''
     })
-
+    
     return (
         <section className="section-feedback">
             <div className="flex flex-row justify-center">
@@ -58,7 +58,7 @@ const page = async({ params } : RouteParams) => {
             <hr />
             <p>{feedback?.finalAssessment}</p>
             <div className="flex flex-col gap-4">
-                <h2>Breakdown of the interview: </h2>
+                <h2 className="text-center">Breakdown of the interview: </h2>
                 {
                     feedback?.categoryScores?.map((category, index) => (
                         <div key={index}>
@@ -95,7 +95,7 @@ const page = async({ params } : RouteParams) => {
                 </ul>
             </div>
             <div className="butttons">
-                <Button className="btn-secondary flex-1">
+                <Button className="btn-secondary flex-1 w-full">
                     <Link href="/" className="flex w-full justify-center">
                         <p className="text-sm font-semibold text-primary-200 text-center">
                             Back to dashboard

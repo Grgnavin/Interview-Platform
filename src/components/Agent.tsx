@@ -58,10 +58,9 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
             vapi.off('speech-end', onSpeechEnd);
             vapi.off('error', onCallError);
         }
-    }, [])
-
+    }, []);
+    
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-        console.log("Generating feedback...");
         const{ success, feedbackId: id } = await createFeedback({
             interviewId: interviewId!,
             userId: userId!,
@@ -84,7 +83,7 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
                 handleGenerateFeedback(messages);
             }
         }
-        if (callStatus === CallStatus.FINISHED)  router.push('/');
+        if (callStatus === CallStatus.FINISHED)  router.push(`/interview/${interviewId}/feedback`);
     }, [messages, callStatus, type, userId])
 
     const handleCall = async () => {

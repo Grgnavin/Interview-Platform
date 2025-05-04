@@ -40,13 +40,13 @@ export async function signupAction(params: SignUpParams) {
 
 export async function signInAction(params: SignInParams) {
     const { email, idToken } = params;
+    const userRecord = await auth.getUserByEmail(email);
     try {
-        const userRecord = await auth.getUserByEmail(email);
         if (!userRecord) {
             return {
                 success: false,
                 message: 'User not found.',
-            }
+            } 
         }
         
         await setSessionCookie(idToken);
@@ -58,7 +58,7 @@ export async function signInAction(params: SignInParams) {
         console.error('Error signing in:', error);
         return {
             success: false,
-            message: 'Failed to sign in...',
+            message: 'Failed to sign in',
         };
     }
 }
