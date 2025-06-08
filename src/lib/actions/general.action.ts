@@ -23,14 +23,14 @@ export async function createFeedback(params: CreateFeedbackParams)  {
             }),
             schema:feedbackSchema,
             prompt: `
-                You are an AI interviewer analyzing a mock interview. Your task is to evaluate the candidate based on the steuctured categories. Be thorough and deatiled in your analysis. Don't be lenient with the cancidate.
+                You are an AI interviewer analyzing a mock interview. Your task is to evaluate the candidate based on the steuctured categories. Be thorough and deatiled in your analysis. Don't be too soft with the candidate.
                 If there are some mistake or areas to improvement, point them out.
                 Transcript: 
                 ${formatttedTranscript}
                 Please score the candidate from 0 to 100 in the folowing areas. Do not add categories other than the ones provided:
                 -  **Communication skills**: Clarity, articulation, structured responses.
-                -  **Technical knowledge**: Understanding the key concept of the role.
-                -  **Problem-solving skills**: Ability to analyze problem and propose solution.
+                -  **Technical knowledge**: Understanding the key concept of the role and the techonology.
+                -  **Problem-solving skills**: Ability to analyze problem and propose solution with structure.
                 -  **Cultural and Role fit**: Alignment with the company values and job role.
                 -  **Confidence and clarity**: Confidence in responses, engagement, and clarity.
             `,
